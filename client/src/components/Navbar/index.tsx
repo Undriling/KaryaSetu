@@ -43,7 +43,7 @@ const Navbar = () => {
               : `rounded p-2 hover:bg-gray-100`
           }
         >
-          {isDarkMode ? (
+          {!isDarkMode ? (
             <Sun className="h-6 w-6 cursor-pointer dark:text-white" />
           ) : (
             <Moon className="h-6 w-6 cursor-pointer dark:text-white" />
