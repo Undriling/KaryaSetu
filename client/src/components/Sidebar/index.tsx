@@ -2,6 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { setIsSidebarCollapsed } from "@/state";
+import { useGetProjectsQuery } from "@/state/api";
 // import { signOut } from "aws-amplify/auth";
 import {
   AlertCircle,
@@ -30,11 +31,11 @@ const Sidebar = () => {
   const [showProjects, setShowProjects] = useState(true);
   const [showPriority, setShowPriority] = useState(true);
 
+  const { data: projects } = useGetProjectsQuery();
   const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
     (state) => state.global?.isSidebarCollapsed,
   );
-
 
   const sidebarClassNames = `fixed flex flex-col h-[100%] justify-between shadow-xl
     transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white
@@ -70,12 +71,7 @@ const Sidebar = () => {
         </div>
         {/* TEAM */}
         <div className="flex items-center gap-5 border-y-[1.5px] border-gray-200 px-8 py-4 dark:border-gray-700">
-          <Image
-            src="/rawLogo.svg"
-            alt="Logo"
-            width={50}
-            height={40}
-          />
+          <Image src="/rawLogo.svg" alt="Logo" width={50} height={40} />
           <div>
             <h3 className="text-md font-bold tracking-wide dark:text-gray-200">
               KaryaSetu
@@ -108,6 +104,54 @@ const Sidebar = () => {
             <ChevronDown className="h-5 w-5" />
           )}
         </button>
+        {/* PROJECTS LIST */}
+        {showProjects &&
+          projects?.map((project) => (
+            <SidebarLink
+              key={project.id}
+              icon={Briefcase}
+              label={project.name}
+              href={`/projects/${project.id}`}
+            />
+          ))}
+
+        {/* PRIORITIES LINKS */}
+        <button
+          onClick={() => setShowPriority((prev) => !prev)}
+          className="flex w-full items-center justify-between px-8 py-3 text-gray-500"
+        >
+          <span className="">Priority</span>
+          {showPriority ? (
+            <ChevronUp className="h-5 w-5" />
+          ) : (
+            <ChevronDown className="h-5 w-5" />
+          )}
+        </button>
+        {showPriority && (
+          <>
+            <SidebarLink
+              icon={AlertCircle}
+              label="Urgent"
+              href="/priority/urgent"
+            />
+            <SidebarLink
+              icon={ShieldAlert}
+              label="High"
+              href="/priority/high"
+            />
+            <SidebarLink
+              icon={AlertTriangle}
+              label="Medium"
+              href="/priority/medium"
+            />
+            <SidebarLink icon={AlertOctagon} label="Low" href="/priority/low" />
+            <SidebarLink
+              icon={Layers3}
+              label="Backlog"
+              href="/priority/backlog"
+            />
+          </>
+        )}
       </div>
     </div>
   );
@@ -126,9 +170,9 @@ const SidebarLink = ({ href, icon: Icon, label }: SidebarLinkProps) => {
   const screenWidth = window.innerWidth;
 
   const dispatch = useAppDispatch();
-    const isSidebarCollapsed = useAppSelector(
-      (state) => state.global.isSidebarCollapsed,
-    );
+  const isSidebarCollapsed = useAppSelector(
+    (state) => state.global.isSidebarCollapsed,
+  );
 
   return (
     <Link href={href} className="w-full">
@@ -138,7 +182,7 @@ const SidebarLink = ({ href, icon: Icon, label }: SidebarLinkProps) => {
         } justify-start px-8 py-3`}
       >
         {isActive && (
-          <div className="absolute left-0 top-0 h-[100%] w-[5px] bg-blue-200" />
+          <div className="absolute top-0 left-0 h-[100%] w-[5px] bg-blue-200" />
         )}
 
         <Icon className="h-6 w-6 text-gray-800 dark:text-gray-100" />
